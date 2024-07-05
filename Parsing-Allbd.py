@@ -7,8 +7,8 @@ from ConfigDB import host, user, password, db_name
 def get_vacancies(keyword):
     url = "https://api.hh.ru/vacancies"
     params = {
-        "text": keyword,
         "area": 1,  
+        "text": keyword,
         "per_page": 20,  # Кол-во объектов на странице
     }
     headers = {
@@ -23,8 +23,8 @@ def get_vacancies(keyword):
         vac_list = []  
         for vacancy in vac:
             vac_title = vacancy.get('name')
-            comp_name = vacancy.get('employer', {}).get("name")
             vac_salary = vacancy.get('salary')
+            comp_name = vacancy.get('employer', {}).get("name")
             if vac_salary:
                 vac_salary_from = vac_salary.get("from")
                 vac_salary_to = vac_salary.get("to")
@@ -38,10 +38,10 @@ def get_vacancies(keyword):
             # Добавляем вакансию в список
             vac_list.append({
                 "vacancy_title": vac_title,
-                "company_name": comp_name,
                 "vacancy_salary_from": vac_salary_from,
                 "vacancy_salary_to": vac_salary_to,
                 "vacancy_salary_currency": vac_salary_currency,
+                "company_name": comp_name,
                 "vacancy_url": vac_url
             })
 

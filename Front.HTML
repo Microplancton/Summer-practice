@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parsing</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #af744c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Поиск вакансий на HH.ru</h1>
+        <input type="text" id="inputValue" placeholder="Введите ключевое слово">
+        <button onclick="translate()">Искать</button>
+        <div id="results"></div>
+
+        <script>
+            function translate() {
+                var value = document.getElementById("inputValue").value;
+                var resultsDiv = document.getElementById("results");
+
+                // Отправляем запрос на сервер
+                fetch(`/vacancies?keyword=${value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Обработка результата
+                        if (data.error) {
+                            resultsDiv.innerHTML = `<p>Ошибка: ${data.error}</p>`;
+                        } else {
+                            resultsDiv.innerHTML = `
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Вакансия</th>
+                                            <th>Компания</th>
+                                            <th>Зарплата от</th>
+                                            <th>Зарплата до</th>
+                                            <th>Валюта</th>
+                                            <th>Ссылка</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${data.map(vacancy => `
+                                            <tr>
+                                                <td>${vacancy.vacancy_title}</td>
+                                                <td>${vacancy.company_name}</td>
+                                                <td>${vacancy.vacancy_salary_from || '-'}</td>
+                                                <td>${vacancy.vacancy_salary_to || '-'}</td>
+                                                <td>${vacancy.vacancy_salary_currency || '-'}</td>
+                                                <td><a href="${vacancy.vacancy_url}" target="_blank">${vacancy.vacancy_url}</a></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        resultsDiv.innerHTML = `<p>Ошибка: ${error}</p>`;
+                    });
+            }
+        </script>
+    </div>
+</body>
+</html>
